@@ -27,6 +27,7 @@ import { NspClient } from './nsp-client.js';
 import { getNetworkInventoryTools, handleNetworkInventoryTool } from './tools/inventory.js';
 import { getFaultManagementTools, handleFaultManagementTool } from './tools/fault-management.js';
 import { getServiceManagementTools, handleServiceManagementTool } from './tools/service-management.js';
+import { getRestconfTools, handleRestconfTool } from './tools/restconf.js';
 
 // ── Configuration ─────────────────────────────────────────────────────────────
 
@@ -55,12 +56,16 @@ const FM_TOOL_NAMES = new Set(
 const SVC_TOOL_NAMES = new Set(
   getServiceManagementTools().map((t) => t.name)
 );
+const RESTCONF_TOOL_NAMES = new Set(
+  getRestconfTools().map((t) => t.name)
+);
 
 function getAllTools() {
   return [
     ...getNetworkInventoryTools(),
     ...getFaultManagementTools(),
     ...getServiceManagementTools(),
+    ...getRestconfTools(),
   ];
 }
 
@@ -103,6 +108,8 @@ async function main() {
         result = await handleFaultManagementTool(name, toolArgs, nspClient);
       } else if (SVC_TOOL_NAMES.has(name)) {
         result = await handleServiceManagementTool(name, toolArgs, nspClient);
+      } else if (RESTCONF_TOOL_NAMES.has(name)) {
+        result = await handleRestconfTool(name, toolArgs, nspClient);
       } else {
         throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${name}`);
       }
